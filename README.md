@@ -2,7 +2,11 @@
 
 [中文文档](./README.zh-CN.md)
 
-This project provides tools to set up and configure a CxAgent with kb-mcp-server integration for knowledge base access.
+This project is a chatbot that can be configured as an agent using MCP tools. It currently mainly supports answering questions about FinClip. The frontend chat interface can be embedded as a floating window on websites, and the backend is an Agent based on [CxAgent](https://github.com/Geeksfino/cxagent).
+
+Before deploying this project, you need to generate a knowledge base. Simply place documents in the `contents` directory and run `bun run kb:package` to generate the knowledge base. The generation process requires some computation time; refer to the [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) documentation for details. Additionally, the quality of knowledge base retrieval and generation depends on the configuration in `kb.yml`, including source file formats, data chunking strategies (e.g., by line, by paragraph), chunk overlap, retriever type, and choice of embedding models.
+
+Running the script `bun start` will launch the agent. The script includes all necessary setup steps and automatically downloads required models and generates configuration files based on the model configured in `kb.yml`.
 
 ## Quick Start
 
