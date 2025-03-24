@@ -8,7 +8,7 @@ This project provides tools to set up and configure a CxAgent with kb-mcp-server
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/finclip-agent.git
+git clone https://gitlab.finogeeks.club/liangqh/finclip-agent.git
 cd finclip-agent
 
 # Run the setup script (installs all dependencies)

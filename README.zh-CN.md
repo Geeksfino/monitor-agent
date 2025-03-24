@@ -6,7 +6,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/finclip-agent.git
+git clone https://gitlab.finogeeks.club/liangqh/finclip-agent.git
 cd finclip-agent
 
 # 运行设置脚本（安装所有依赖）
