@@ -115,15 +115,15 @@ async function main() {
     switch (choice) {
       case '1':
         console.log('\n🔨 Building knowledge base...\n');
-        await runCommand(kbBuildPath, ['--config', 'kb.yml']);
+        await runCommand(kbBuildPath, ['--config', 'kb.yml', '--input', 'contents']);
         break;
       case '2':
         console.log('\n🔨 Building knowledge base with debug output...\n');
-        await runCommand(kbBuildPath, ['--config', 'kb.yml', '--debug']);
+        await runCommand(kbBuildPath, ['--config', 'kb.yml', '--input', 'contents', '--debug']);
         break;
       case '3':
-        console.log('\n📦 Packaging knowledge base...\n');
-        await runCommand(kbBuildPath, ['--config', 'kb.yml', '--export', 'finclip.tar.gz']);
+        console.log('\n📦 Exporting knowledge base...\n');
+        await runCommand(kbBuildPath, ['--config', 'kb.yml', '--input', 'contents', '--export', 'finclip.tar.gz']);
         break;
       case '4':
         console.log('\n🔍 Searching knowledge base...\n');

@@ -9,13 +9,14 @@
     "generate-config": "bun generate-config.js",
     "start": "bun index.js",
     "kb:interactive": "bun build-kb.js",
-    "kb:build": ".venv/bin/kb-build --config kb.yml",
-    "kb:build:debug": ".venv/bin/kb-build --config kb.yml --debug",
+    "kb:build": ".venv/bin/kb-build --config kb.yml --input contents",
+    "kb:build:debug": ".venv/bin/kb-build --config kb.yml --input contents --debug",
     "kb:search": ".venv/bin/kb-search --config kb.yml",
     "kb:search:graph": ".venv/bin/kb-search --config kb.yml --graph",
-    "kb:package": ".venv/bin/kb-build --config kb.yml --export finclip.tar.gz"
+    "kb:package": ".venv/bin/kb-build --config kb.yml --input contents --export finclip.tar.gz"
   },
   "dependencies": {
+    "@finogeek/cxagent": "^1.0.1",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
