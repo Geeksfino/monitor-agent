@@ -1,0 +1,24 @@
+{
+  "name": "finclip-agent",
+  "version": "1.0.0",
+  "description": "Setup and configuration tools for finclip agent with kb-mcp-server integration",
+  "type": "module",
+  "scripts": {
+    "setup": "bash setup.sh",
+    "download-models": "bun download-models.js",
+    "generate-config": "bun generate-config.js",
+    "start": "bun index.js",
+    "kb:interactive": "bun build-kb.js",
+    "kb:build": ".venv/bin/kb-build --config kb.yml",
+    "kb:build:debug": ".venv/bin/kb-build --config kb.yml --debug",
+    "kb:search": ".venv/bin/kb-search --config kb.yml",
+    "kb:search:graph": ".venv/bin/kb-search --config kb.yml --graph",
+    "kb:package": ".venv/bin/kb-build --config kb.yml --export finclip.tar.gz"
+  },
+  "dependencies": {
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.25"
+  }
+}
