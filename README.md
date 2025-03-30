@@ -15,8 +15,14 @@ Running the script `bun start` will launch the agent. The script includes all ne
 git clone https://gitlab.finogeeks.club/liangqh/finclip-agent.git
 cd finclip-agent
 
-# Run the setup script (installs all dependencies)
+# Run the environment setup script (installs all dependencies)
+bun setup:env
+
+# Start the agent
 bun start
+
+# Verify the agent is working with the inspector UI
+bun start --inspect
 ```
 
 ## Manual Setup
@@ -45,6 +51,30 @@ After setup, you'll need to:
 1. Edit `.agent.env` with your API key and other settings
 2. Place your knowledge base embeddings at `./finclip.tar.gz` or update the path in `conf/preproc-mcp.json`
 3. Optionally create a `brain.md` file to customize your agent's behavior
+
+## Verifying the Agent
+
+To quickly verify that the agent is working correctly, you can use the inspector UI:
+
+```bash
+bun start --inspect
+```
+
+This will open a web interface where you can see the agent's configuration, test its functionality, and ensure everything is set up correctly.
+
+## Embedding Demo
+
+This project includes a demo showing how to embed the FinClip chat widget in web applications. For more information, see the [embedding demo README](./embedding-demo/README.md).
+
+You can run the embedding demo using one of the following commands:
+
+```bash
+# Using Python HTTP server (recommended)
+bun run serve:python
+
+# Using Nginx (requires Nginx to be installed)
+bun run serve:nginx
+```
 
 ## Knowledge Base Management
 

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinClip Chat Widget Integration Guide</title>
+  <!-- Load the chat widget stylesheet -->
+  <link rel="stylesheet" href="node_modules/@finogeek/cxagent/web/dist/style.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      background-color: #f8f9fa;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      color: #2563eb;
+    }
+    .content {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+    }
+    h2 {
+      color: #2563eb;
+      margin-top: 0;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 10px;
+    }
+    code {
+      display: block;
+      background-color: #f1f5f9;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    .demo-instructions {
+      background-color: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .demo-instructions h3 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>FinClip Chat Widget Integration Guide</h1>
+    <p>Learn how to embed the FinClip chat widget on any website</p>
+  </header>
+
+  <div class="content">
+    <h2>Integration Guide</h2>
+    
+    <p>Adding the FinClip chat widget to your website is simple. There are two methods:</p>
+    
+    <h3>Method 1: Simple Embedding</h3>
+    <p>Include our script with the <code>data-finclip-chat</code> attribute for automatic initialization, and don't forget to add the stylesheet:</p>
+    <code>
+      &lt;!-- Add the stylesheet in the head section --&gt;<br>
+      &lt;link rel="stylesheet" href="https://your-domain.com/finclip-chat.css"&gt;<br>
+      <br>
+      &lt;!-- Simple embedding with default settings --&gt;<br>
+      &lt;script src="https://your-domain.com/finclip-chat.js" data-finclip-chat&gt;&lt;/script&gt;
+    </code>
+    
+    <h3>Method 2: Advanced Configuration</h3>
+    <p>For more control, initialize the widget manually with custom options:</p>
+    <code>
+      &lt;!-- Add the stylesheet in the head section --&gt;<br>
+      &lt;link rel="stylesheet" href="https://your-domain.com/finclip-chat.css"&gt;<br>
+      <br>
+      &lt;!-- Load the script --&gt;<br>
+      &lt;script src="https://your-domain.com/finclip-chat.js"&gt;&lt;/script&gt;<br>
+      <br>
+      &lt;!-- Initialize with custom options --&gt;<br>
+      &lt;script&gt;<br>
+      &nbsp;&nbsp;window.initFinClipChat({<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;buttonLabel: "Chat with Support",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;initialOpen: false,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;suggestions: ["How do I get started?", "What are your pricing plans?"],<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;suggestionsLabel: "Frequently Asked Questions",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;apiUrl: "https://api.your-domain.com",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;streamingUrl: "https://streaming.your-domain.com"<br>
+      &nbsp;&nbsp;});<br>
+      &lt;/script&gt;
+    </code>
+    
+    <h3>Configuration Options</h3>
+    <ul>
+      <li><strong>buttonLabel</strong>: Text shown on the chat button</li>
+      <li><strong>initialOpen</strong>: Whether to open the chat window on page load</li>
+      <li><strong>suggestions</strong>: Array of suggested questions to show users</li>
+      <li><strong>suggestionsLabel</strong>: Header text for the suggestions section</li>
+      <li><strong>apiUrl</strong>: URL for the chat API endpoint</li>
+      <li><strong>streamingUrl</strong>: URL for the streaming response endpoint</li>
+    </ul>
+    
+    <h3>Required Files</h3>
+    <p>Make sure to include both the JavaScript and CSS files for the widget to function properly:</p>
+    <ul>
+      <li><strong>JavaScript</strong>: <code>finclip-chat-embed.iife.js</code> - Contains the widget functionality</li>
+      <li><strong>CSS</strong>: <code>style.css</code> - Contains the styling for the widget</li>
+    </ul>
+    <p>The CSS file is essential for the widget to display correctly. Without it, the chat button and interface will not be properly styled.</p>
+    
+    <div class="demo-instructions">
+      <h3>Demo Instructions</h3>
+      <p>This demo is connecting to a locally running FinClip agent.</p>
+      <ol>
+        <li>Make sure you've started the agent with: <code>bun start</code></li>
+        <li>The chat widget in the bottom-right corner connects to your local agent</li>
+        <li>Try asking questions to see how the agent responds</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Initialize the chat widget with correct local endpoints -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize the FinClip chat widget
+      window.initFinClipChat({
+        buttonLabel: "Chat with FinClip Agent",
+        initialOpen: false,
+        suggestions: ["How do I use FinClip?", "What can this agent do?"],
+        suggestionsLabel: "Try asking",
+        apiUrl: "http://localhost:5678",
+        streamingUrl: "http://localhost:5679"
+      });
+    });
+  </script>
+  
+  <!-- Load the embedding script from the local cxagent package in node_modules -->
+  <script src="node_modules/@finogeek/cxagent/web/dist/finclip-chat-embed.iife.js"></script>
+</body>
+</html>

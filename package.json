@@ -4,22 +4,31 @@
   "description": "Setup and configuration tools for finclip agent with kb-mcp-server integration",
   "type": "module",
   "scripts": {
-    "setup": "bash setup.sh",
-    "download-models": "bun download-models.js",
-    "generate-config": "bun generate-config.js",
-    "start": "bun index.js",
-    "kb:interactive": "bun build-kb.js",
+    "setup": "bash scripts/setup.sh",
+    "download-models": "bun scripts/download-models.js",
+    "generate-config": "bun scripts/generate-config.js",
+    "setup:env": "bun scripts/index.js",
+    "start": "bun scripts/start.js",
+    "kb:interactive": "bun scripts/build-kb.js",
     "kb:build": ".venv/bin/kb-build --config kb.yml --input contents",
     "kb:build:debug": ".venv/bin/kb-build --config kb.yml --input contents --debug",
     "kb:search": ".venv/bin/kb-search --config kb.yml",
     "kb:search:graph": ".venv/bin/kb-search --config kb.yml --graph",
-    "kb:package": ".venv/bin/kb-build --config kb.yml --input contents --export finclip.tar.gz"
+    "kb:package": ".venv/bin/kb-build --config kb.yml --input contents --export finclip.tar.gz",
+    "serve:nginx": "bash embedding-demo/nginx-cors-server.sh",
+    "serve:python": "bash embedding-demo/python-cors-server.sh"
   },
   "dependencies": {
-    "@finogeek/cxagent": "^1.0.1",
+    "@finogeek/cxagent": "^1.1.16",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
-    "bun-types": "^1.0.25"
+    "bun-types": "^1.0.25",
+    "@types/bun": "latest"
+  },
+  "module": "scripts/index.js",
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }

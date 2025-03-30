@@ -4,7 +4,9 @@
 
 部署本项目前，需要先生成知识库。只要把一些文档放在 `content` 目录下，然后运行 `bun run kb:package` 就可以生成知识库了。但知识库的生成需要一些运算时间，可以参考 [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) 的文档。此外，知识库的检索扩展生成质量，取决于 `kb.yml` 中的配置，包括源文件的格式、数据切块的策略（例如按行、按段落）、数据切块的重叠量、检索器的类型、embedding models的选择等。
 
-运行脚本 `bun start` 可以启动代理。脚本已经包含了所有必要的设置步骤，并且会自动基于 `kb.yml` 中配置的模型，下载所需的模型和生成配置文件。
+运行脚本 `bun setup:env` 可以设置环境。该脚本已经包含了所有必要的设置步骤，并且会自动基于 `kb.yml` 中配置的模型，下载所需的模型和生成配置文件。
+
+准备完成后，可以使用 `bun start` 启动代理。
 
 
 ## 快速开始
@@ -14,8 +16,14 @@
 git clone https://gitlab.finogeeks.club/liangqh/finclip-agent.git
 cd finclip-agent
 
-# 运行设置脚本（安装所有依赖）
+# 运行环境设置脚本（安装所有依赖）
+bun setup:env
+
+# 启动代理
 bun start
+
+# 使用检查器界面验证代理是否正常工作
+bun start --inspect
 ```
 
 ## 手动设置
@@ -44,6 +52,30 @@ bun start
 1. 编辑 `.agent.env` 文件，填入您的 API 密钥和其他设置
 2. 将您的知识库嵌入文件放在 `./finclip.tar.gz` 或在 `conf/preproc-mcp.json` 中更新路径
 3. 可选地创建 `brain.md` 文件来自定义您的代理行为
+
+## 验证代理
+
+要快速验证代理是否正常工作，您可以使用检查器界面：
+
+```bash
+bun start --inspect
+```
+
+这将打开一个网页界面，您可以在其中查看代理的配置，测试其功能，并确保一切设置正确。
+
+## 嵌入演示
+
+本项目包含一个演示，展示如何在网页应用中嵌入 FinClip 聊天小部件。有关更多信息，请参阅[嵌入演示 README](./embedding-demo/README.md)。
+
+您可以使用以下命令之一运行嵌入演示：
+
+```bash
+# 使用 Python HTTP 服务器（推荐）
+bun run serve:python
+
+# 使用 Nginx（需要安装 Nginx）
+bun run serve:nginx
+```
 
 ## 知识库管理
 

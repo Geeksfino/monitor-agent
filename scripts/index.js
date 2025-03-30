@@ -44,15 +44,15 @@ async function runAllScripts() {
   try {
     // Step 1: Run setup script
     console.log('\n📋 Step 1: Setting up dependencies...');
-    await runScript(path.join(process.cwd(), 'setup.sh'));
+    await runScript(path.join(process.cwd(), 'scripts/setup.sh'));
     
     // Step 2: Download models
     console.log('\n📋 Step 2: Downloading models...');
-    await runBunScript(path.join(process.cwd(), 'download-models.js'));
+    await runBunScript(path.join(process.cwd(), 'scripts/download-models.js'));
     
     // Step 3: Generate configuration
     console.log('\n📋 Step 3: Generating configuration...');
-    await runBunScript(path.join(process.cwd(), 'generate-config.js'));
+    await runBunScript(path.join(process.cwd(), 'scripts/generate-config.js'));
     
     console.log('\n🎉 finclip-agent setup completed successfully!');
     console.log('\n📝 Next steps:');

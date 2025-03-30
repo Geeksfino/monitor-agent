@@ -10,7 +10,7 @@ console.log('🔍 Reading kb.yml file to identify required models...');
 // Read the kb.yml file
 let kbConfig;
 try {
-  const kbYaml = fs.readFileSync('./kb.yml', 'utf8');
+  const kbYaml = fs.readFileSync(path.join(process.cwd(), 'kb.yml'), 'utf8');
   kbConfig = yaml.parse(kbYaml);
 } catch (error) {
   console.error('❌ Error reading kb.yml file:', error.message);
