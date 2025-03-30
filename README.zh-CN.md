@@ -38,6 +38,11 @@ bun start
 
 # 使用检查器界面验证代理是否正常工作
 bun start --inspect
+# point browser to http://localhost:5173
+
+# or
+bun start --inspect --inspect-port 3000
+# point browser to http://localhost:3000
 ```
 
 ## 手动设置
@@ -73,6 +78,7 @@ bun start --inspect
 
 ```bash
 bun start --inspect
+# point browser to http://localhost:5173
 ```
 
 这将打开一个网页界面，您可以在其中查看代理的配置，测试其功能，并确保一切设置正确。

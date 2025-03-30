@@ -69,6 +69,11 @@ To quickly verify that the agent is working correctly, you can use the inspector
 
 ```bash
 bun start --inspect
+
+# or
+bun start --inspect --inspect-port 3000
+
+# point browser to http://localhost:3000
 ```
 
 This will open a web interface where you can see the agent's configuration, test its functionality, and ensure everything is set up correctly.
