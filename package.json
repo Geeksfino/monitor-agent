@@ -1,7 +1,7 @@
 {
-  "name": "finclip-agent",
+  "name": "finclip-agent-starterkit",
   "version": "1.0.0",
-  "description": "Setup and configuration tools for finclip agent with kb-mcp-server integration",
+  "description": "Starter kit for building knowledge base-powered agents with finclip-agent",
   "type": "module",
   "scripts": {
     "setup": "bash scripts/setup.sh",

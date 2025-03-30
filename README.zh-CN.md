@@ -1,6 +1,6 @@
-# finclip-agent
+# finclip-agent-starterkit
 
-本项目是一个聊天机器人，当配置工具后，可以成为一个智能代理（Agent）。目前主要支持关于FinClip相关的问题回答。其前端聊天界面可以浮窗方式嵌入至网站中，后端则是一个基于[CxAgent](https://github.com/Geeksfino/cxagent)的Agent。
+本项目是一个用于构建基于知识库的聊天机器人的启动套件，使用 finclip-agent 技术。它提供了所有必要的设置和配置工具，以快速部署具有自定义知识的智能代理。其前端聊天界面可以浮窗方式嵌入至网站中，后端则是一个基于[finclip-agent](https://github.com/Geeksfino/finclip-agent)的Agent。
 
 部署本项目前，需要先生成知识库。只要把一些文档放在 `content` 目录下，然后运行 `bun run kb:package` 就可以生成知识库了。但知识库的生成需要一些运算时间，可以参考 [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) 的文档。此外，知识库的检索扩展生成质量，取决于 `kb.yml` 中的配置，包括源文件的格式、数据切块的策略（例如按行、按段落）、数据切块的重叠量、检索器的类型、embedding models的选择等。
 
@@ -13,8 +13,9 @@
 
 ```bash
 # 克隆仓库
-git clone https://gitlab.finogeeks.club/liangqh/finclip-agent.git
-cd finclip-agent
+git clone https://github.com/Geeksfino/finclip-agent-starterkit.git
+
+cd finclip-agent-starterkit
 
 # 运行环境设置脚本（安装所有依赖）
 bun setup:env
