@@ -2,6 +2,9 @@
 .env
 .agent.env
 
+# Configuration files with user-specific paths
+conf/preproc-mcp.json
+
 # Python
 __pycache__/
 *.py[cod]

@@ -69,8 +69,10 @@ bun start --inspect --inspect-port 3000
 设置完成后，您需要：
 
 1. 编辑 `.agent.env` 文件，填入您的 API 密钥和其他设置
-2. 将您的知识库嵌入文件放在 `./finclip.tar.gz` 或在 `conf/preproc-mcp.json` 中更新路径
+2. 将您的知识库嵌入文件放在 `./finclip.tar.gz`（`conf/preproc-mcp.json` 文件会在设置过程中自动生成，包含特定于您环境的路径）
 3. 可选地创建 `brain.md` 文件来自定义您的代理行为
+
+> **注意**：`conf/preproc-mcp.json` 文件包含特定于您本地环境的路径，由设置过程自动生成。不应手动编辑或提交到版本控制系统。
 
 ## 验证代理
 
