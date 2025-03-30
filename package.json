@@ -20,7 +20,7 @@
     "serve:python": "bash embedding-demo/python-cors-server.sh"
   },
   "dependencies": {
-    "@finogeek/cxagent": "^1.1.16",
+    "@finogeek/cxagent": "^1.1.17",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
