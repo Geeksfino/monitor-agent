@@ -15,37 +15,61 @@
 
 本项目是一个用于构建基于知识库的聊天机器人的启动套件，使用 finclip-agent 技术。它提供了所有必要的设置和配置工具，以快速部署具有自定义知识的智能代理。其前端聊天界面可以浮窗方式嵌入至网站中，后端则是一个基于[finclip-agent](https://github.com/Geeksfino/finclip-agent)的Agent。
 
-部署本项目前，需要先生成知识库。只要把一些文档放在 `content` 目录下，然后运行 `bun run kb:package` 就可以生成知识库了。但知识库的生成需要一些运算时间，可以参考 [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) 的文档。此外，知识库的检索扩展生成质量，取决于 `kb.yml` 中的配置，包括源文件的格式、数据切块的策略（例如按行、按段落）、数据切块的重叠量、检索器的类型、embedding models的选择等。
+## 开始使用
 
-运行脚本 `bun setup:env` 可以设置环境。该脚本已经包含了所有必要的设置步骤，并且会自动基于 `kb.yml` 中配置的模型，下载所需的模型和生成配置文件。
+设置脚本将自动检测并安装所需的依赖项。您只需要：
 
-准备完成后，可以使用 `bun start` 启动代理。
-
+- 类 Unix 环境（macOS、Linux 或 Windows 上的 WSL）
+- [Python](https://www.python.org/) 3.9 或更高版本（设置脚本将检测但不会安装 Python）
 
 ## 快速开始
 
 ```bash
 # 克隆仓库
 git clone https://github.com/Geeksfino/finclip-agent-starterkit.git
-
 cd finclip-agent-starterkit
 
-# 运行环境设置脚本（安装所有依赖）
+# 运行环境设置脚本（自动检测并安装依赖项）
 bun setup:env
+
+# 将示例文件复制到 contents 目录（可选）
+bun run kb:use-samples
+
+# 构建知识库（生成 kb.tar.gz）
+bun run kb:package
 
 # 启动代理
 bun start
 
 # 使用检查器界面验证代理是否正常工作
 bun start --inspect
-# point browser to http://localhost:5173
+# 浏览器访问 http://localhost:5173
 
-# or
+# 或者指定端口
 bun start --inspect --inspect-port 3000
-# point browser to http://localhost:3000
+# 浏览器访问 http://localhost:3000
 ```
 
-## 手动设置
+## 环境设置
+
+### 自动设置
+
+设置环境的最简单方法是运行：
+
+```bash
+bun setup:env
+```
+
+此脚本将：
+1. 检查并安装 Bun（如果尚未安装）
+2. 验证 Python 是否已安装（如果未找到，您需要手动安装 Python）
+3. 安装所有必要的依赖项
+4. 创建 Python 虚拟环境
+5. 安装 kb-mcp-server
+6. 下载所需的模型
+7. 生成配置文件
+
+### 手动设置
 
 如果您更喜欢手动运行每个步骤：
 
@@ -68,9 +92,43 @@ bun start --inspect --inspect-port 3000
 
 设置完成后，您需要：
 
-1. 编辑 `.agent.env` 文件，填入您的 API 密钥和其他设置
-2. 将您的知识库嵌入文件放在 `./finclip.tar.gz`（`conf/preproc-mcp.json` 文件会在设置过程中自动生成，包含特定于您环境的路径）
-3. 可选地创建 `brain.md` 文件来自定义您的代理行为
+1. 编辑 `.agent.env` 文件，设置您的 API 密钥和其他设置
+2. 可选择编辑 `brain.md` 文件，自定义您的代理行为
+
+> **注意**：`conf/preproc-mcp.json` 文件包含特定于您本地环境的路径，由设置过程自动生成。不应手动编辑或提交到版本控制系统。
+
+## 示例知识库内容
+
+本启动套件在 `knowledge-samples` 目录中附带了示例 Markdown 文件，涵盖数据科学、机器学习、神经网络和自然语言处理等主题。这使您可以在添加自己的内容之前快速构建一个可用于测试的知识库。
+
+### 使用示例文件
+
+要使用提供的示例文件：
+
+```bash
+# 将示例文件复制到 contents 目录
+bun run kb:use-samples
+
+# 构建知识库（生成 kb.tar.gz）
+bun run kb:package
+```
+
+### 构建知识库
+
+1. 将示例文件复制到 `contents` 目录后，运行知识库构建命令时将使用这些文件
+2. 要生成知识库，运行 `bun run kb:package`
+3. 知识库将根据根目录中 `kb.yml` 的设置进行构建
+4. 构建完成后，您可以运行 `bun run kb:search` 来搜索知识库中的信息
+
+### 使用自己的内容进行自定义
+
+当您准备好使用自己的知识自定义聊天机器人时：
+
+1. 将您自己的 Markdown、PDF 或其他支持的文档放在 `contents` 目录中
+2. 如有需要，调整 `kb.yml` 中的设置（例如，分块策略、嵌入模型等）
+3. 使用 `bun run kb:package` 重新构建知识库
+
+知识库的检索扩展生成质量，取决于 `kb.yml` 中的配置，包括源文件的格式、数据切块的策略（例如按行、按段落）、数据切块的重叠量、检索器的类型、embedding models 的选择等。生成过程需要一些计算时间；有关详细信息，请参阅 [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) 文档。
 
 > **注意**：`conf/preproc-mcp.json` 文件包含特定于您本地环境的路径，由设置过程自动生成。不应手动编辑或提交到版本控制系统。
 

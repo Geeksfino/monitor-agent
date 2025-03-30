@@ -4,7 +4,7 @@
       "command": "/path/to/kb-mcp-server",
       "args": [
         "--embeddings",
-        "/path/to/finclip.tar.gz",
+        "/path/to/kb.tar.gz",
         "--enable-causal-boost"
       ],
       "cwd": "/path/to/project"

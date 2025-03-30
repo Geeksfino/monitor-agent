@@ -9,7 +9,7 @@ console.log('🔧 Generating MCP configuration...');
 // Get the project directory
 const projectDir = process.cwd();
 const confDir = path.join(projectDir, 'conf');
-const embeddingsPath = path.join(projectDir, 'finclip.tar.gz');
+const embeddingsPath = path.join(projectDir, 'kb.tar.gz');
 
 // Ensure conf directory exists
 if (!fs.existsSync(confDir)) {
