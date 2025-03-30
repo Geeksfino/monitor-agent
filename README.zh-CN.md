@@ -182,5 +182,5 @@ bunx @finogeek/cxagent
 ## 高级配置
 
 有关高级配置选项，请参考：
-- [CxAgent 文档](https://github.com/Geeksfino/cxagent)
+- [finclip-agent 文档](https://github.com/Geeksfino/finclip-agent)
 - [kb-mcp-server 文档](https://github.com/Geeksfino/kb-mcp-server)

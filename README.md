@@ -2,7 +2,7 @@
 
 [中文文档](./README.zh-CN.md)
 
-This project is a starter kit for building knowledge base-powered chatbots using FinClip and CxAgent. It provides all the necessary setup and configuration tools to quickly deploy an agent with custom knowledge. The frontend chat interface can be embedded as a floating window on websites, and the backend is an Agent based on [finclip-agent](https://github.com/Geeksfino/finclip-agent).
+This project is a starter kit for building knowledge base-powered chatbots using FinClip and finclip-agent. It provides all the necessary setup and configuration tools to quickly deploy an agent with custom knowledge. The frontend chat interface can be embedded as a floating window on websites, and the backend is an Agent based on [finclip-agent](https://github.com/Geeksfino/finclip-agent).
 
 Before deploying this project, you need to generate a knowledge base. Simply place documents in the `contents` directory and run `bun run kb:package` to generate the knowledge base. The generation process requires some computation time; refer to the [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) documentation for details. Additionally, the quality of knowledge base retrieval and generation depends on the configuration in `kb.yml`, including source file formats, data chunking strategies (e.g., by line, by paragraph), chunk overlap, retriever type, and choice of embedding models.
 
@@ -179,5 +179,5 @@ Open this HTML file in your browser to interact with the agent.
 ## Advanced Configuration
 
 For advanced configuration options, refer to:
-- [CxAgent Documentation](https://github.com/Geeksfino/cxagent)
+- [finclip-agent Documentation](https://github.com/Geeksfino/finclip-agent)
 - [kb-mcp-server Documentation](https://github.com/Geeksfino/kb-mcp-server)
