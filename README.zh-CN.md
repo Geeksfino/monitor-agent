@@ -15,6 +15,8 @@
 
 本项目是一个用于构建基于知识库的聊天机器人的启动套件，使用 finclip-agent 技术。它提供了所有必要的设置和配置工具，以快速部署具有自定义知识的智能代理。其前端聊天界面可以浮窗方式嵌入至网站中，后端则是一个基于[finclip-agent](https://github.com/Geeksfino/finclip-agent)的Agent。
 
+**重要提示**：在创建您自己的代理时，请确保严格遵循 [finclip-agent 文档](https://github.com/Geeksfino/finclip-agent#agent-brain)中指定的 `brain.md` 文件的 YAML 格式要求。该文件只能包含以下顶级字段：`name`（名称）、`role`（角色）、`goal`（目标）和 `capabilities`（能力）。任何其他结构都会导致代理无法正常启动。
+
 ## 开始使用
 
 设置脚本将自动检测并安装所需的依赖项。您只需要：

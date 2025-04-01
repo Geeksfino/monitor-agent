@@ -15,6 +15,8 @@
 
 This project is a starter kit for building knowledge base-powered chatbots using FinClip and finclip-agent. It provides all the necessary setup and configuration tools to quickly deploy an agent with custom knowledge. The frontend chat interface can be embedded as a floating window on websites, and the backend is an Agent based on [finclip-agent](https://github.com/Geeksfino/finclip-agent).
 
+**Important**: When creating your own agent, make sure to follow the strict YAML format requirements for the `brain.md` file as specified in the [finclip-agent documentation](https://github.com/Geeksfino/finclip-agent#agent-brain). The file must only contain the top-level fields: `name`, `role`, `goal`, and `capabilities`. Any other structure will prevent the agent from starting correctly.
+
 ## Getting Started
 
 The setup script will automatically check for and install required dependencies. You only need:
