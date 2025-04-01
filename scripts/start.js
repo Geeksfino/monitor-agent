@@ -4,7 +4,13 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 // Get all command line arguments
-const args = process.argv.slice(2);
+let args = process.argv.slice(2);
+
+// Check if --inspect flag is present without --inspect-port
+if (args.includes('--inspect') && !args.some(arg => arg.startsWith('--inspect-port'))) {
+  // Add default inspect port 5173 as mentioned in the README
+  args.push('--inspect-port', '5173');
+}
 
 // Path to the local cxagent executable
 const cxagentPath = path.join(

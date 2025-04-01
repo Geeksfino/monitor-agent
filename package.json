@@ -12,7 +12,7 @@
     "kb:interactive": "bun scripts/build-kb.js",
     "kb:build": ".venv/bin/kb-build --config kb.yml --input contents",
     "kb:build:debug": ".venv/bin/kb-build --config kb.yml --input contents --debug",
-    "kb:search": ".venv/bin/kb-search --config kb.yml",
+    "kb:search": ".venv/bin/kb-search kb.tar.gz",
     "kb:search:graph": ".venv/bin/kb-search --config kb.yml --graph",
     "kb:package": ".venv/bin/kb-build --config kb.yml --input contents --export kb.tar.gz",
     "kb:use-samples": "bun scripts/use-samples.js",

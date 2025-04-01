@@ -38,6 +38,9 @@ bun run kb:use-samples
 # 构建知识库（生成 kb.tar.gz）
 bun run kb:package
 
+# 配置您的 API 密钥到 .agent.env 文件中（必需）
+# 编辑 .agent.env 文件并添加您的 LLM API 密钥
+
 # 启动代理
 bun start
 
@@ -92,7 +95,14 @@ bun setup:env
 
 设置完成后，您需要：
 
-1. 编辑 `.agent.env` 文件，设置您的 API 密钥和其他设置
+1. 编辑 `.agent.env` 文件，设置您的 API 密钥和其他设置（必需）
+   ```
+   # .agent.env 配置示例
+   LLM_API_KEY=your_api_key_here        # 替换为您的实际 API 密钥
+   LLM_PROVIDER_URL=https://api.openai.com/v1
+   LLM_MODEL=gpt-4o                    # 或者您选择的其他模型
+   LLM_STREAM_MODE=true
+   ```
 2. 可选择编辑 `brain.md` 文件，自定义您的代理行为
 
 > **注意**：`conf/preproc-mcp.json` 文件包含特定于您本地环境的路径，由设置过程自动生成。不应手动编辑或提交到版本控制系统。
@@ -118,7 +128,7 @@ bun run kb:package
 1. 将示例文件复制到 `contents` 目录后，运行知识库构建命令时将使用这些文件
 2. 要生成知识库，运行 `bun run kb:package`
 3. 知识库将根据根目录中 `kb.yml` 的设置进行构建
-4. 构建完成后，您可以运行 `bun run kb:search` 来搜索知识库中的信息
+4. 构建完成后，您可以运行 `bun run kb:search "您的搜索查询"` 来搜索知识库中的信息
 
 ### 使用自己的内容进行自定义
 
@@ -137,11 +147,49 @@ bun run kb:package
 要快速验证代理是否正常工作，您可以使用检查器界面：
 
 ```bash
+# 使用 start 脚本
 bun start --inspect
-# point browser to http://localhost:5173
+# 浏览器访问 http://localhost:5173
+
+# 或者指定自定义端口
+bun start --inspect --inspect-port 3000
+# 浏览器访问 http://localhost:3000
+
+# 或者，您可以直接使用 cxagent 命令
+bunx @finogeek/cxagent --inspect
+# 或者
+bunx @finogeek/cxagent --inspect --inspect-port 3000
 ```
 
 这将打开一个网页界面，您可以在其中查看代理的配置，测试其功能，并确保一切设置正确。
+
+## 故障排除
+
+### 常见问题
+
+1. **构建知识库时关于 `.gitkeep` 文件的错误**
+   ```
+   Error processing file contents/.gitkeep: File format not allowed: .gitkeep
+   ```
+   这是一个无害的警告。`.gitkeep` 文件用于确保 `contents` 目录在 Git 中存在，但它不是有效的知识库文档。您可以安全地忽略此警告。
+
+2. **设置过程中关于找不到嵌入文件的警告**
+   ```
+   Warning: Embeddings file not found at /path/to/kb.tar.gz
+   ```
+   此警告出现是因为知识库尚未构建。运行 `bun run kb:package` 后将解决此问题。
+
+3. **API 密钥问题**
+   如果您看到与 API 认证相关的错误，请确保您已在 `.agent.env` 文件中正确配置了 API 密钥。
+
+4. **命令未找到错误**
+   如果遇到“命令未找到”错误，请确保您已使用 `bun setup:env` 完成设置过程。
+
+5. **知识库搜索不工作**
+   如果 `bun run kb:search` 不按预期工作，请尝试使用直接命令：
+   ```bash
+   .venv/bin/kb-search kb.tar.gz "您的搜索查询"
+   ```
 
 ## 嵌入演示
 
