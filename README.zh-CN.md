@@ -19,19 +19,48 @@
 
 ## 开始使用
 
-设置脚本将自动检测并安装所需的依赖项。您只需要：
+**重要提示**：本项目使用 [Bun](https://bun.sh/) 作为 JavaScript 运行时和包管理器，而不是 Node.js/npm。
+
+### 环境准备
+
+在开始之前，请通过运行设置脚本来准备您的环境：
+
+```bash
+# 下载设置脚本
+curl -fsSL https://raw.githubusercontent.com/Geeksfino/finclip-agent-starterkit/main/scripts/setup.sh -o setup.sh
+
+# 设置可执行权限
+chmod +x setup.sh
+
+# 运行设置脚本
+./setup.sh
+```
+
+此脚本将：
+- 安装 Bun（如果尚未安装）
+- 检查 Python（您需要安装 Python 3.9+）
+- 安装 uv（Python 包管理器）
+- 设置 Python 虚拟环境
+- 安装必要的依赖项
+
+**注意**：设置脚本将检查是否已安装 Python，但不会为您安装 Python。如果未找到 Python，脚本将显示错误消息并退出。
+
+### 先决条件
 
 - 类 Unix 环境（macOS、Linux 或 Windows 上的 WSL）
-- [Python](https://www.python.org/) 3.9 或更高版本（设置脚本将检测但不会安装 Python）
+- 系统上已安装 [Python](https://www.python.org/) 3.9 或更高版本
 
 ## 快速开始
+
+使用设置脚本准备环境后，按照以下步骤操作：
 
 ```bash
 # 克隆仓库
 git clone https://github.com/Geeksfino/finclip-agent-starterkit.git
 cd finclip-agent-starterkit
 
-# 运行环境设置脚本（自动检测并安装依赖项）
+# 运行环境设置脚本
+# 这将下载模型并生成配置文件
 bun setup:env
 
 # 将示例文件复制到 contents 目录（可选）

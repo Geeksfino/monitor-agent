@@ -19,19 +19,48 @@ This project is a starter kit for building knowledge base-powered chatbots using
 
 ## Getting Started
 
-The setup script will automatically check for and install required dependencies. You only need:
+**Important**: This project uses [Bun](https://bun.sh/) instead of Node.js/npm as the JavaScript runtime and package manager.
+
+### Environment Preparation
+
+Before you begin, prepare your environment by running the setup script:
+
+```bash
+# Download the setup script
+curl -fsSL https://raw.githubusercontent.com/Geeksfino/finclip-agent-starterkit/main/scripts/setup.sh -o setup.sh
+
+# Make it executable
+chmod +x setup.sh
+
+# Run the setup script
+./setup.sh
+```
+
+This script will:
+- Install Bun (if not already installed)
+- Check for Python (you'll need Python 3.9+ installed)
+- Install uv (Python package manager)
+- Set up a Python virtual environment
+- Install necessary dependencies
+
+**Note**: The setup script will check if Python is installed, but it will not install Python for you. If Python is not found, the script will exit with an error message.
+
+### Prerequisites
 
 - A Unix-like environment (macOS, Linux, or WSL on Windows)
-- [Python](https://www.python.org/) 3.9 or higher (the setup script will detect but not install Python)
+- [Python](https://www.python.org/) 3.9 or higher installed on your system
 
 ## Quick Start
+
+After preparing your environment with the setup script, follow these steps:
 
 ```bash
 # Clone the repository
 git clone https://github.com/Geeksfino/finclip-agent-starterkit.git
 cd finclip-agent-starterkit
 
-# Run the environment setup script (automatically detects and installs dependencies)
+# Run the environment setup script
+# This will download models and generate configuration files
 bun setup:env
 
 # Copy sample files to the contents directory (optional)
