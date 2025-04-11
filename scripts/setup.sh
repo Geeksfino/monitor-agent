@@ -34,6 +34,8 @@ if command_exists uv; then
 else
   echo "⏳ Installing uv..."
   curl -fsSL https://github.com/astral-sh/uv/releases/download/0.1.24/uv-installer.sh | bash
+  # Source the cargo environment to add uv to PATH
+  source $HOME/.cargo/env
   echo "✅ uv installed successfully"
 fi
 
