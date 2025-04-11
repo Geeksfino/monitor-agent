@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
@@ -8,6 +8,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     git \
+    build-essential \
+    gcc \
+    g++ \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Bun
