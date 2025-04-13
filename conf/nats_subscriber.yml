@@ -1,0 +1,20 @@
+# NATS Subscriber Configuration
+# This file configures the NATS subscriber for conversation monitoring
+
+# Whether the subscriber is enabled
+enabled: true
+
+# NATS server connection
+nats:
+  # NATS server URL
+  url: nats://localhost:4222
+  # Base subject to subscribe to
+  subject: conversation.segments.>
+
+# Filtering configuration
+filters:
+  # Add custom filters here based on your specific business domain
+  # Examples:
+  # keywords: ["term1", "term2"] - Add domain-specific terms to monitor
+  # severity_levels: ["high", "critical"] - Configure severity levels to monitor
+  # channels: ["email", "slack"] - Configure notification channels

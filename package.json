@@ -1,7 +1,7 @@
 {
-  "name": "finclip-agent-starterkit",
+  "name": "monitor-agent",
   "version": "1.0.0",
-  "description": "Starter kit for building knowledge base-powered agents with finclip-agent",
+  "description": "A dedicated monitoring agent for finclip-agent conversations",
   "type": "module",
   "scripts": {
     "setup": "bash scripts/setup.sh",
@@ -9,6 +9,11 @@
     "generate-config": "bun scripts/generate-config.js",
     "setup:env": "bun scripts/index.js",
     "start": "bun scripts/start.js",
+    "monitor": "bash scripts/run-all.sh",
+    "watch": "bun --watch Monitor.ts",
+    "watch:monitor": "bun --watch scripts/run-monitor.js",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "kb:interactive": "bun scripts/build-kb.js",
     "kb:build": ".venv/bin/kb-build --config kb.yml --input contents",
     "kb:build:debug": ".venv/bin/kb-build --config kb.yml --input contents --debug",
@@ -20,8 +25,11 @@
     "serve:python": "bash embedding-demo/python-cors-server.sh"
   },
   "dependencies": {
+    "@finogeek/actgent": "^1.1.0",
     "@finogeek/cxagent": "^1.1.19",
-    "yaml": "^2.3.4"
+    "js-yaml": "^4.1.0",
+    "nats": "^2.29.3",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "bun-types": "^1.0.25",
