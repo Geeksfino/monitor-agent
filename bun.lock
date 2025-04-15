@@ -4,11 +4,10 @@
     "": {
       "name": "finclip-agent",
       "dependencies": {
-        "@finogeek/actgent": "^1.1.0",
-        "@finogeek/cxagent": "^1.1.20",
+        "@finogeek/cxagent": "^1.1.19",
         "js-yaml": "^4.1.0",
-        "nats": "^2.19.0",
-        "yaml": "^2.3.4",
+        "nats": "^2.29.3",
+        "yaml": "^2.7.0",
       },
       "devDependencies": {
         "@types/bun": "latest",
