@@ -26,8 +26,10 @@
   },
   "dependencies": {
     "@finogeek/cxagent": "^1.1.19",
+    "@prisma/client": "^6.6.0",
     "js-yaml": "^4.1.0",
     "nats": "^2.29.3",
+    "prisma": "^6.6.0",
     "yaml": "^2.7.0"
   },
   "devDependencies": {

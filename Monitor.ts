@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { PrismaClient } from '@prisma/client';
 import * as NATS from "nats";
 import * as yaml from "js-yaml";
 import fs from "fs";
@@ -8,20 +9,31 @@ import path from "path";
 /**
  * Simple Monitor class that connects to NATS and forwards messages to agent
  */
+// Plugin loader
+async function loadStrategy(pluginName: string) {
+  const pluginPath = path.join(__dirname, 'plugins', pluginName);
+  const strategy = (await import(pluginPath)).default;
+  return strategy;
+}
+
 class Monitor {
   private natsConnection: NATS.NatsConnection | null = null;
   private natsSubscription: NATS.Subscription | null = null;
   private config: any;
   private agentUrl: string;
   private agentSessionId: string | null = null; // Single session ID for communicating with the agent
+  private db: PrismaClient;
+  private strategy: any;
   
   /**
    * Create a new Monitor
    * @param agentUrl Base URL of the agent API endpoint (e.g., http://localhost:6678)
    * @param configPath Path to the NATS configuration file
    */
-  constructor(agentUrl: string, configPath?: string, streamUrl?: string) {
+  constructor(agentUrl: string, strategy: any, configPath?: string, streamUrl?: string) {
     this.agentUrl = agentUrl;
+    this.db = new PrismaClient();
+    this.strategy = strategy;
     if (streamUrl) {
       (this as any).streamUrl = streamUrl; // Optionally store for future use
       console.log(`Using stream URL: ${streamUrl}`);
@@ -74,29 +86,22 @@ class Monitor {
     if (!this.natsConnection) {
       throw new Error('Not connected to NATS server');
     }
-    
     try {
       const subject = this.config.nats.subject;
       console.log(`Subscribing to ${subject}`);
-      
       this.natsSubscription = this.natsConnection.subscribe(subject);
       console.log(`Subscription active on ${subject}`);
-      
-      // Process messages
       for await (const msg of this.natsSubscription) {
         const data = msg.string();
         try {
           const segment = JSON.parse(data);
           console.log(`Received conversation segment: ${segment.id}`);
           console.log(`Segment data: ${JSON.stringify(segment, null, 2)}`);
-          
-          // Send to agent
-          const response = await this.sendToAgent(segment);
-          
-          // Print response
-          console.log('\n------- Agent Response -------');
-          console.log(response);
-          console.log('-----------------------------\n');
+          await this.persistSegment(segment);
+          const shouldSend = await this.strategy.onSegmentPersisted(segment.sessionId, segment.agentId, this.db);
+          if (shouldSend) {
+            await this.sendSessionToMonitorAgent(segment.sessionId, segment.agentId);
+          }
         } catch (error) {
           console.error('Error processing message:', error);
         }
@@ -105,6 +110,60 @@ class Monitor {
       console.error('Error subscribing to NATS subject:', error);
       throw error;
     }
+  }
+
+  async persistSegment(segment: any) {
+    // Upsert segment by id, update messages and turn count
+    await this.db.segment.upsert({
+      where: { id: segment.id },
+      update: {
+        messages: segment.messages,
+        turnCount: segment.messages.length,
+        timestamp: new Date(segment.timestamp),
+        updatedAt: new Date()
+      },
+      create: {
+        id: segment.id,
+        sessionId: segment.sessionId,
+        agentId: segment.agentId,
+        timestamp: new Date(segment.timestamp),
+        messages: segment.messages,
+        turnCount: segment.messages.length,
+        sent: false
+      }
+    });
+  }
+
+  async sendSessionToMonitorAgent(sessionId: string, agentId: string) {
+    // Aggregate all segments for the session, order by timestamp
+    const segments = await this.db.segment.findMany({
+      where: { sessionId, agentId },
+      orderBy: { timestamp: 'asc' }
+    });
+    if (segments.length === 0) return;
+
+    // Use the strategy to select which messages to send
+    const selectedMessages = this.strategy.getMessagesToSend(segments);
+    if (!selectedMessages || selectedMessages.length === 0) return;
+
+    // Format selectedMessages as dialog and send to monitor agent
+    const dialog = selectedMessages.map((msg: any) => {
+      const role = msg.sender === 'user' ? 'User' : 'Assistant';
+      return `${role}: ${msg.content}`;
+    }).join('\n\n');
+    const prompt = `Please analyze and evaluate the following conversation:\n\n${dialog}`;
+    await this.sendToAgent({
+      sessionId,
+      agentId,
+      messages: selectedMessages,
+      prompt
+    });
+
+    // Mark as sent: for all/delta/window, mark all segments as sent if any message was sent
+    await this.db.segment.updateMany({
+      where: { sessionId, agentId },
+      data: { sent: true }
+    });
   }
   
   /**
@@ -238,15 +297,30 @@ if (require.main === module) {
         streamUrl = process.argv[i + 1];
       }
     }
-    const monitor = new Monitor(apiBaseUrl);
+    // Load strategy plugin from conf/monitor.yml if available
+    let strategyName = 'turnCountStrategy';
+    const monitorConfPath = path.join(process.cwd(), 'conf', 'monitor.yml');
+    let monitorConf: any = {};
+    if (fs.existsSync(monitorConfPath)) {
+      try {
+        monitorConf = yaml.load(fs.readFileSync(monitorConfPath, 'utf-8')) as any;
+        if (monitorConf && monitorConf.strategy) {
+          strategyName = monitorConf.strategy;
+        }
+      } catch (e) {
+        console.warn('Could not parse conf/monitor.yml, using default strategy.');
+      }
+    }
+    const strategy = await loadStrategy(strategyName);
+    if (typeof strategy.configure === 'function') {
+      strategy.configure(monitorConf);
+    }
+    const monitor = new Monitor(apiBaseUrl, strategy);
     // Optionally, you can store streamUrl for future use, e.g., this.streamUrl = streamUrl;
-    
     try {
       await monitor.connect();
       await monitor.subscribe();
-      
       console.log('Monitor is running. Press Ctrl+C to exit.');
-      
       // Handle graceful shutdown
       process.on('SIGINT', async () => {
         console.log('Shutting down...');

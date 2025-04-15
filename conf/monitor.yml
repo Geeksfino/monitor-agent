@@ -1,0 +1,5 @@
+# Specify the strategy plugin to use (default: turnCountStrategy)
+strategy: turnCountStrategy
+turnsThreshold: 4   # Change this value to set the trigger threshold
+sendMode: window      # 'all', 'delta', or 'window'
+windowSize: 8      # only used if sendMode: window

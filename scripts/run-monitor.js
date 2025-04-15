@@ -1,15 +1,15 @@
 #!/usr/bin/env bun
 
 /**
- * Script to run the Monitor2.ts file
+ * Script to run the Monitor.ts file
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-// Get the path to the Monitor2.ts file
-const monitorPath = path.join(process.cwd(), 'Monitor2.ts');
+// Get the path to the Monitor.ts file
+const monitorPath = path.join(process.cwd(), 'Monitor.ts');
 
 // Check if the file exists
 if (!fs.existsSync(monitorPath)) {
@@ -50,9 +50,9 @@ if (!args.includes('--stream-url')) {
   args.push('--stream-url', `http://localhost:${streamPort}`);
 }
 
-console.log('🚀 Starting NATS Monitor2...');
+console.log('🚀 Starting NATS Monitor...');
 
-// Run the Monitor2.ts file with Bun
+// Run the Monitor.ts file with Bun
 const monitorProcess = spawn('bun', ['run', monitorPath, ...args], {
   stdio: 'inherit',
   cwd: process.cwd(),
