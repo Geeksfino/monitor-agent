@@ -4,6 +4,7 @@
 
 # Configuration files with user-specific paths
 conf/preproc-mcp.json
+conf/mcp_config.json
 
 # Python
 __pycache__/

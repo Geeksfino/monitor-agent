@@ -1,0 +1,27 @@
+# Ignore Node dependencies
+node_modules
+
+# Ignore local environment file
+.agent.env
+
+# Ignore build artifacts
+dist
+
+# Ignore git directory
+.git
+
+# Ignore Dockerfile itself if needed (usually not)
+# Dockerfile
+
+# Ignore macOS specific files
+.DS_Store
+
+# Ignore debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Ignore Bun specific files
+bun.lockb
