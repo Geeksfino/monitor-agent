@@ -70,8 +70,11 @@ class Monitor {
    */
   async connect() {
     try {
-      console.log(`Connecting to NATS server at ${this.config.nats.url}`);
-      this.natsConnection = await NATS.connect({ servers: this.config.nats.url });
+      // Prioritize environment variable, then config file, then default
+      const natsUrl = process.env.MONITOR_NATS_URL || this.config?.nats?.url || 'nats://localhost:4222';
+      
+      console.log(`Connecting to NATS server at ${natsUrl}`);
+      this.natsConnection = await NATS.connect({ servers: natsUrl });
       console.log('Connected to NATS server');
     } catch (error) {
       console.error('Failed to connect to NATS server:', error);

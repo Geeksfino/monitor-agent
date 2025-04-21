@@ -1,9 +1,10 @@
-FROM python:3.11-slim
+# Use a minimal Debian base image
+FROM debian:12-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies needed for Bun, Prisma, and potential native modules
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
@@ -12,7 +13,13 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     cmake \
+    openssl \
+    libssl-dev \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
+
+# Create directory for supervisor logs
+RUN mkdir -p /var/log/supervisor
 
 # Install Bun
 RUN curl -fsSL https://bun.sh/install | bash
@@ -20,17 +27,21 @@ RUN curl -fsSL https://bun.sh/install | bash
 # Add Bun to PATH
 ENV PATH="/root/.bun/bin:${PATH}"
 
-# Copy project files
+# Copy dependency definition files and prisma schema
+COPY package.json bun.lockb* tsconfig.json ./
+COPY prisma ./prisma/
+
+# Install project dependencies using the lockfile for consistency
+RUN bun install --frozen-lockfile
+
+# Generate Prisma Client
+RUN bunx prisma generate
+
+# Copy the rest of the application code
 COPY . .
 
-# Set up environment
-RUN bun setup:env
+# Copy supervisor configuration
+COPY conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Build knowledge base (if not already built)
-RUN if [ ! -f kb.tar.gz ]; then bun run kb:use-samples && bun run kb:package; fi
-
-# Expose the default port
-EXPOSE 3000
-
-# Command to run the application
-CMD ["bun", "start"]
+# Run supervisord as the main command
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
