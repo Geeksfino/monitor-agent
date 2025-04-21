@@ -1,344 +1,183 @@
-# finclip-agent-starterkit
+# Monitor Agent
 
-<p align="right">
+<p align="center">
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/powered%20by-Bun-orange.svg" alt="由 Bun 提供支持"></a>
+  <a href="https://github.com/Geeksfino/finclip-agent"><img src="https://img.shields.io/badge/based%20on-finclip--agent-blue.svg" alt="基于 finclip-agent"></a>
   <a href="README.md">English</a> |
   <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/Geeksfino/finclip-agent-starterkit/stargazers"><img src="https://img.shields.io/github/stars/Geeksfino/finclip-agent-starterkit.svg" alt="GitHub stars"></a>
-  <a href="https://github.com/Geeksfino/finclip-agent-starterkit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Geeksfino/finclip-agent-starterkit.svg" alt="许可证"></a>
-  <a href="https://github.com/Geeksfino/finclip-agent-starterkit/issues"><img src="https://img.shields.io/github/issues/Geeksfino/finclip-agent-starterkit.svg" alt="GitHub issues"></a>
-  <a href="https://bun.sh"><img src="https://img.shields.io/badge/powered%20by-Bun-orange.svg" alt="由 Bun 提供支持"></a>
-  <a href="https://github.com/Geeksfino/finclip-agent"><img src="https://img.shields.io/badge/based%20on-finclip--agent-blue.svg" alt="基于 finclip-agent"></a>
-</p>
+一个专门用于监控 finclip-agent 对话的服务。该服务订阅由 finclip-agent 中的 NatsConversationHandler 发布的对话片段，并将其转发给一个正在运行的 cxagent 实例进行分析。
 
-本项目是一个用于构建基于知识库的聊天机器人的启动套件，使用 finclip-agent 技术。它提供了所有必要的设置和配置工具，以快速部署具有自定义知识的智能代理。其前端聊天界面可以浮窗方式嵌入至网站中，后端则是一个基于[finclip-agent](https://github.com/Geeksfino/finclip-agent)的Agent。
+该服务作为一个由 `supervisor` 管理的 Docker 容器运行，同时运行监控逻辑 (`Monitor.ts`) 和底层的 cxagent (`scripts/start.js`)。
 
-**重要提示**：在创建您自己的代理时，请确保严格遵循 [finclip-agent 文档](https://github.com/Geeksfino/finclip-agent#agent-brain)中指定的 `brain.md` 文件的 YAML 格式要求。该文件只能包含以下顶级字段：`name`（名称）、`role`（角色）、`goal`（目标）和 `capabilities`（能力）。任何其他结构都会导致代理无法正常启动。
+## 概述
 
-## 开始使用
+Monitor 旨在与 finclip-agent 实例协同工作。它连接到 NATS 服务器以接收对话片段，并将其转发给嵌入的 cxagent 实例进行分析。
 
-**重要提示**：本项目使用 [Bun](https://bun.sh/) 作为 JavaScript 运行时和包管理器，而不是 Node.js/npm。
+## 特性
 
-### 环境准备
+- **NATS 集成**: 订阅由 finclip-agent 发布的对话片段。
+- **对话转发**: 将对话转发给嵌入的 cxagent 实例进行分析。
+- **LLM 驱动分析**: 利用 cxagent 的 LLM 能力进行对话分析。
+- **Docker化**: 作为一个包含 `supervisor` 的自包含 Docker 镜像运行。
+- **可配置**: NATS 连接可通过环境变量配置。
+- **CI/CD**: 通过 GitHub Actions 自动构建并发布到 GitHub Container Registry。
 
-在开始之前，请通过运行设置脚本来准备您的环境：
+## 先决条件
 
-```bash
-# 下载设置脚本
-curl -fsSL https://raw.githubusercontent.com/Geeksfino/finclip-agent-starterkit/main/scripts/setup.sh -o setup.sh
+- [Docker](https://www.docker.com/) 和 Docker Compose (推荐)。
+- NATS 服务器的访问权限。
+- (可选) [Bun](https://bun.sh/) v1.2.0 或更高版本，用于本地开发。
 
-# 设置可执行权限
-chmod +x setup.sh
+## 使用 Docker 运行
 
-# 运行设置脚本
-./setup.sh
-```
+这是运行 Monitor Agent 的推荐方式。
 
-此脚本将：
-- 安装 Bun（如果尚未安装）
-- 检查 Python（您需要安装 Python 3.9+）
-- 安装 uv（Python 包管理器）
-- 设置 Python 虚拟环境
-- 安装必要的依赖项
+### 构建镜像
 
-**注意**：设置脚本将检查是否已安装 Python，但不会为您安装 Python。如果未找到 Python，脚本将显示错误消息并退出。
-
-### 先决条件
-
-- 类 Unix 环境（macOS、Linux 或 Windows 上的 WSL）
-- 系统上已安装 [Python](https://www.python.org/) 3.9 或更高版本
-
-## 快速开始
-
-使用设置脚本准备环境后，按照以下步骤操作：
+您可以在本地构建镜像：
 
 ```bash
-# 克隆仓库
-git clone https://github.com/Geeksfino/finclip-agent-starterkit.git
-cd finclip-agent-starterkit
+# 导航到 monitor-agent 目录
+cd monitor-agent
 
-# 运行环境设置脚本
-# 这将下载模型并生成配置文件
-bun setup:env
-
-# 将示例文件复制到 contents 目录（可选）
-bun run kb:use-samples
-
-# 构建知识库（生成 kb.tar.gz）
-bun run kb:package
-
-# 配置您的 API 密钥到 .agent.env 文件中（必需）
-# 编辑 .agent.env 文件并添加您的 LLM API 密钥
-
-# 启动代理
-bun start
-
-# 使用检查器界面验证代理是否正常工作
-bun start --inspect
-# 浏览器访问 http://localhost:5173
-
-# 或者指定端口
-bun start --inspect --inspect-port 3000
-# 浏览器访问 http://localhost:3000
+# 构建 Docker 镜像
+docker build -t monitor-agent:latest .
 ```
 
-## 环境设置
+或者，使用来自 GitHub Container Registry 的预构建镜像（请参阅 CI/CD 部分）。
 
-### 自动设置
+### 运行容器
 
-设置环境的最简单方法是运行：
+容器需要通过环境变量传递 NATS 服务器 URL。
 
 ```bash
-bun setup:env
+docker run -it --rm \
+  -e MONITOR_NATS_URL="nats://your-nats-server:4222" \
+  ghcr.io/geeksfino/monitor-agent:latest
 ```
 
-此脚本将：
-1. 检查并安装 Bun（如果尚未安装）
-2. 验证 Python 是否已安装（如果未找到，您需要手动安装 Python）
-3. 安装所有必要的依赖项
-4. 创建 Python 虚拟环境
-5. 安装 kb-mcp-server
-6. 下载所需的模型
-7. 生成配置文件
+**将 `nats://your-nats-server:4222` 替换为您的实际 NATS 服务器地址。**
 
-### 手动设置
+**连接到本地 NATS:**
 
-如果您更喜欢手动运行每个步骤：
+如果您的 NATS 服务器直接运行在 Docker 主机（macOS 或 Windows）上，请使用 `host.docker.internal` 作为主机名：
 
-1. 设置依赖项：
-   ```bash
-   bun run setup
-   ```
+```bash
+docker run -it --rm \
+  -e MONITOR_NATS_URL="nats://host.docker.internal:4222" \
+  ghcr.io/geeksfino/monitor-agent:latest
+```
 
-2. 下载所需模型：
-   ```bash
-   bun run download-models
-   ```
+**使用本地配置文件:**
 
-3. 生成配置：
-   ```bash
-   bun run generate-config
-   ```
+您可以通过使用 `-v` 标志挂载本地文件/目录来覆盖镜像中内置的配置文件。这对于开发或在不重新构建镜像的情况下提供自定义设置很有用。
+
+```bash
+# 从 monitor-agent 目录运行
+docker run -it --rm \
+  -v "$(pwd)/conf":/app/conf \
+  -v "$(pwd)/brain.md":/app/brain.md \
+  -e MONITOR_NATS_URL="nats://host.docker.internal:4222" \
+  ghcr.io/geeksfino/monitor-agent:latest
+```
+
+此命令将您的本地 `./conf` 目录挂载到容器内的 `/app/conf`，并将您的本地 `./brain.md` 挂载到容器内的 `/app/brain.md`。
 
 ## 配置
 
-设置完成后，您需要：
+### NATS 连接 (`MONITOR_NATS_URL`)
 
-1. 编辑 `.agent.env` 文件，设置您的 API 密钥和其他设置（必需）
-   ```
-   # .agent.env 配置示例
-   LLM_API_KEY=your_api_key_here        # 替换为您的实际 API 密钥
-   LLM_PROVIDER_URL=https://api.openai.com/v1
-   LLM_MODEL=gpt-4o                    # 或者您选择的其他模型
-   LLM_STREAM_MODE=true
-   ```
-2. 可选择编辑 `brain.md` 文件，自定义您的代理行为
+- **主要方法 (Docker):** 在运行 Docker 容器时设置 `MONITOR_NATS_URL` 环境变量（例如，`-e MONITOR_NATS_URL="nats://your-server:4222"`）。
+- **备用 / 本地开发:** 如果未设置环境变量，服务将尝试从 `conf/nats_subscriber.yml` 读取 URL。如果失败，则默认为 `nats://localhost:4222`。
 
-> **注意**：`conf/preproc-mcp.json` 文件包含特定于您本地环境的路径，由设置过程自动生成。不应手动编辑或提交到版本控制系统。
-
-## 示例知识库内容
-
-本启动套件在 `knowledge-samples` 目录中附带了示例 Markdown 文件，涵盖数据科学、机器学习、神经网络和自然语言处理等主题。这使您可以在添加自己的内容之前快速构建一个可用于测试的知识库。
-
-### 使用示例文件
-
-要使用提供的示例文件：
-
-```bash
-# 将示例文件复制到 contents 目录
-bun run kb:use-samples
-
-# 构建知识库（生成 kb.tar.gz）
-bun run kb:package
+```yaml
+# conf/nats_subscriber.yml (备用配置)
+enabled: true
+nats:
+  url: nats://localhost:4222 # 如果未设置 MONITOR_NATS_URL 环境变量，则使用此项
+  subject: conversation.segments.>
 ```
 
-### 构建知识库
+### Agent LLM 配置 (`.agent.env`)
 
-1. 将示例文件复制到 `contents` 目录后，运行知识库构建命令时将使用这些文件
-2. 要生成知识库，运行 `bun run kb:package`
-3. 知识库将根据根目录中 `kb.yml` 的设置进行构建
-4. 构建完成后，您可以运行 `bun run kb:search "您的搜索查询"` 来搜索知识库中的信息
+底层的 cxagent 需要 LLM API 凭据。如果您计划挂载本地配置，请在*您的本地项目检出*的根目录中创建一个 `.agent.env` 文件。**请勿提交此文件。**
 
-### 使用自己的内容进行自定义
-
-当您准备好使用自己的知识自定义聊天机器人时：
-
-1. 将您自己的 Markdown、PDF 或其他支持的文档放在 `contents` 目录中
-2. 如有需要，调整 `kb.yml` 中的设置（例如，分块策略、嵌入模型等）
-3. 使用 `bun run kb:package` 重新构建知识库
-
-知识库的检索扩展生成质量，取决于 `kb.yml` 中的配置，包括源文件的格式、数据切块的策略（例如按行、按段落）、数据切块的重叠量、检索器的类型、embedding models 的选择等。生成过程需要一些计算时间；有关详细信息，请参阅 [kb-mcp-server](https://github.com/Geeksfino/kb-mcp-server) 文档。
-
-> **注意**：`conf/preproc-mcp.json` 文件包含特定于您本地环境的路径，由设置过程自动生成。不应手动编辑或提交到版本控制系统。
-
-## 验证代理
-
-要快速验证代理是否正常工作，您可以使用检查器界面：
-
-```bash
-# 使用 start 脚本
-bun start --inspect
-# 浏览器访问 http://localhost:5173
-
-# 或者指定自定义端口
-bun start --inspect --inspect-port 3000
-# 浏览器访问 http://localhost:3000
-
-# 或者，您可以直接使用 cxagent 命令
-bunx @finogeek/cxagent --inspect
-# 或者
-bunx @finogeek/cxagent --inspect --inspect-port 3000
+```env
+# .agent.env (OpenAI 示例)
+AGENT_OPENAI_API_KEY=your_openai_api_key
+AGENT_OPENAI_MODEL=gpt-4-turbo
 ```
 
-这将打开一个网页界面，您可以在其中查看代理的配置，测试其功能，并确保一切设置正确。
+当使用 Docker 运行并挂载 `conf` 目录时，如果 supervisor 启动的代理脚本需要，请确保 `.agent.env` 文件存在于*挂载的*目录中。然而，更好的实践通常是直接将 API 密钥等机密信息作为环境变量传递给 `docker run` 命令（例如 `-e AGENT_OPENAI_API_KEY=...`）。*注意：当前的 Dockerfile/supervisor 设置并未明确加载 `.agent.env`；这需要根据 `scripts/start.js` 如何处理环境变量进行验证。*
 
-## 故障排除
+## 本地开发 / 测试
 
-### 常见问题
+虽然推荐使用 Docker，但您可以在本地运行组件进行测试。
 
-1. **构建知识库时关于 `.gitkeep` 文件的错误**
-   ```
-   Error processing file contents/.gitkeep: File format not allowed: .gitkeep
-   ```
-   这是一个无害的警告。`.gitkeep` 文件用于确保 `contents` 目录在 Git 中存在，但它不是有效的知识库文档。您可以安全地忽略此警告。
+1.  **安装依赖:** `bun install`
+2.  **运行测试发布者:** 使用测试脚本向您的 NATS 服务器发送示例消息。
+    ```bash
+    bun run tests/test-publisher.ts
+    ```
+    *(确保 `tests/test-publisher.ts` 和可能在 `conf/nats_subscriber.yml` 中的 NATS 服务器地址对于本地测试是正确的)*。
+3.  **本地运行监控服务:**
+    ```bash
+    # 确保在您的 shell 中正确设置了 MONITOR_NATS_URL 或
+    # 依赖 conf/nats_subscriber.yml
+    bun scripts/run-monitor.js
+    ```
+4.  **本地运行 Agent:**
+    ```bash
+    # 需要 .agent.env 或环境变量来设置 API 密钥
+    bun scripts/start.js
+    ```
 
-2. **设置过程中关于找不到嵌入文件的警告**
-   ```
-   Warning: Embeddings file not found at /path/to/kb.tar.gz
-   ```
-   此警告出现是因为知识库尚未构建。运行 `bun run kb:package` 后将解决此问题。
+## CI/CD
 
-3. **API 密钥问题**
-   如果您看到与 API 认证相关的错误，请确保您已在 `.agent.env` 文件中正确配置了 API 密钥。
+该项目使用 GitHub Actions 在每次推送到 `main` 分支时自动构建 Docker 镜像并将其推送到 GitHub Container Registry (GHCR)。
 
-4. **命令未找到错误**
-   如果遇到“命令未找到”错误，请确保您已使用 `bun setup:env` 完成设置过程。
+- **工作流文件:** `.github/workflows/docker-build.yml`
+- **发布的镜像:** `ghcr.io/geeksfino/monitor-agent` (标签: `latest` 和 commit SHA)
+- **GHCR 包:** [https://github.com/orgs/Geeksfino/packages/container/package/monitor-agent](https://github.com/orgs/Geeksfino/packages/container/package/monitor-agent) (如果需要，请调整链接)
 
-5. **知识库搜索不工作**
-   如果 `bun run kb:search` 不按预期工作，请尝试使用直接命令：
-   ```bash
-   .venv/bin/kb-search kb.tar.gz "您的搜索查询"
-   ```
+## 架构
 
-## 嵌入演示
+### 组件
 
-本项目包含一个演示，展示如何在网页应用中嵌入 FinClip 聊天小部件。有关更多信息，请参阅[嵌入演示 README](./embedding-demo/README.md)。
+- **Monitor.ts**: 处理 NATS 订阅并将对话转发到 cxagent HTTP API。
+- **scripts/start.js**: 标准 cxagent 启动脚本。
+- **scripts/run-monitor.js**: 用于运行 Monitor.ts 服务的脚本。
+- **conf/nats_subscriber.yml**: NATS 连接的备用配置。
+- **conf/supervisord.conf**: Supervisor 配置，用于管理 Docker 容器内的 monitor 和 agent 进程。
+- **Dockerfile**: 定义 Docker 镜像构建过程。
 
-您可以使用以下命令之一运行嵌入演示：
+### 工作流程 (Docker 容器内部)
 
-```bash
-# 使用 Python HTTP 服务器（推荐）
-bun run serve:python
+1.  `supervisord` 启动 `monitor` 进程 (`run-monitor.js`) 和 `agent` 进程 (`start.js`)。
+2.  Monitor 连接到 NATS 服务器（主要使用 `MONITOR_NATS_URL`）并订阅对话片段。
+3.  收到片段后，Monitor 将其格式化并通过 HTTP API 发送给 cxagent（在同一容器内本地运行）。
+4.  cxagent 使用其 LLM 功能分析对话。
+5.  分析结果打印到控制台（通过 supervisor 输出到 stdout）。
 
-# 使用 Nginx（需要安装 Nginx）
-bun run serve:nginx
-```
+## 与 finclip-agent 集成
 
-## 知识库管理
+该监控服务旨在与 finclip-agent 中的 `NatsConversationHandler` 配合使用。
 
-### 交互模式
+1.  确保在您的 finclip-agent 实例中配置并启用了 `NatsConversationHandler`。
+2.  在 finclip-agent 和 Monitor Agent (`MONITOR_NATS_URL`) 中配置 NATS 服务器 URL，使其指向同一个 NATS 服务器。
+3.  运行 finclip-agent 实例和 Monitor Agent Docker 容器。
 
-finclip-agent 包含一个用于管理知识库的交互式脚本：
+由 finclip-agent 发布的对话片段将被 Monitor Agent 捕获，并由嵌入的 cxagent 进行分析。
 
-```bash
-# 启动交互式知识库管理工具
-bun run kb:interactive
-```
+## 未来增强
 
-该工具通过简单的菜单界面引导您完成构建、导出和搜索知识库的过程。它还会在构建或导出知识库后自动提供更新 MCP 配置的选项。
+- 通过 MCP 服务器与通知提供商（电子邮件、Matrix、Telegram）集成。
+- 用于监控和配置的 Web 界面。
+- 高级过滤和模式识别。
+- 对话历史和分析结果的持久存储。
 
-### 直接命令
+## 许可证
 
-如果您更喜欢直接访问知识库工具，可以使用以下命令：
-
-```bash
-# 从内容目录构建知识库
-bun run kb:build
-
-# 使用调试输出构建
-bun run kb:build:debug
-
-# 交互式搜索知识库
-bun run kb:search
-
-# 使用图形检索搜索
-bun run kb:search:graph
-
-# 导出知识库以便分发
-bun run kb:package
-```
-
-这些命令使用 `kb.yml` 中的配置。导出知识库后，将创建 `finclip.tar.gz` 文件，该文件由 MCP 服务器使用。
-
-## 运行代理
-
-```bash
-# 启动代理
-bunx @finogeek/cxagent
-```
-
-## 嵌入聊天小部件
-
-创建一个包含以下内容的 HTML 文件：
-
-```html
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finclip Agent 聊天</title>
-</head>
-<body>
-  <h1>Finclip Agent 聊天</h1>
-  
-  <script 
-    src="./node_modules/@finogeek/cxagent/web/dist/finclip-chat.js" 
-    data-finclip-chat 
-    data-api-url="http://localhost:5678" 
-    data-streaming-url="http://localhost:5679"
-  ></script>
-</body>
-</html>
-```
-
-在浏览器中打开此 HTML 文件以与代理交互。
-
-## 项目结构
-
-- `setup.sh`：安装 Bun，检查 Python，安装 uv，并设置环境
-- `download-models.js`：根据 kb.yml 从 Hugging Face 下载所需模型
-- `generate-config.js`：为 kb-mcp-server 生成 MCP 配置
-- `index.js`：按顺序运行所有设置步骤的主脚本
-- `build-kb.js`：交互式知识库管理工具
-
-## 要求
-
-- [Bun](https://bun.sh/) 运行时（v1.0.0 或更高版本）
-- Python 3.9+ 和 pip
-- 用于下载模型的互联网连接
-
-## 故障排除
-
-### 常见问题
-
-1. **模型下载失败**：
-   - 检查您的互联网连接
-   - 确保您有足够的磁盘空间
-   - 尝试再次运行 `bun run download-models`
-
-2. **配置生成失败**：
-   - 确保 kb-mcp-server 已正确安装
-   - 检查虚拟环境是否已激活
-
-3. **代理无法启动**：
-   - 验证 `.agent.env` 中的 API 密钥
-   - 检查嵌入文件是否存在于指定路径
-
-## 高级配置
-
-有关高级配置选项，请参考：
-- [finclip-agent 文档](https://github.com/Geeksfino/finclip-agent)
-- [kb-mcp-server 文档](https://github.com/Geeksfino/kb-mcp-server)
+该项目采用 MIT 许可证授权 - 详情请参阅 LICENSE 文件。
