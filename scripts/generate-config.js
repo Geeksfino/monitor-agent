@@ -64,61 +64,32 @@ else:
 // Generate the configuration file
 async function generateConfig() {
   try {
-    // Get the path to kb-mcp-server
-    const kbMcpServerPath = await findKbMcpServerPath();
-    console.log(`📍 Found kb-mcp-server at: ${kbMcpServerPath}`);
+    // Get the path to kb-mcp-server (Keep this for now, but it's likely unused)
+    // const kbMcpServerPath = await findKbMcpServerPath(); 
+    // console.log(`📍 Found kb-mcp-server at: ${kbMcpServerPath}`);
     
-    // Check if embeddings file exists
-    if (!fs.existsSync(embeddingsPath)) {
-      console.warn(`⚠️ Warning: Embeddings file not found at ${embeddingsPath}`);
-      console.warn('⚠️ You will need to provide the correct embeddings file later');
-    } else {
-      console.log(`📍 Using embeddings file: ${embeddingsPath}`);
-    }
-    
-    // Create the configuration object
-    const config = {
-      "mcpServers": {
-        "finclip-rag-server": {
-          "command": kbMcpServerPath,
-          "args": [
-            "--embeddings",
-            embeddingsPath,
-            "--enable-causal-boost"
-          ],
-          "cwd": projectDir
-        }
-      }
-    };
-    
-    // Write the configuration to file
-    const configPath = path.join(confDir, 'preproc-mcp.json');
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    
-    console.log(`✅ Configuration generated at: ${configPath}`);
-    
-    // Create a sample .agent.env file if it doesn't exist
-    const agentEnvPath = path.join(projectDir, '.agent.env');
-    if (!fs.existsSync(agentEnvPath)) {
-      const agentEnvContent = `# LLM Configuration
-LLM_API_KEY=your_api_key_here
-LLM_PROVIDER_URL=https://api.openai.com/v1
-LLM_MODEL=gpt-4o
-LLM_STREAM_MODE=true
+    // Check if embeddings file exists (Keep this check for now, but likely unused)
+    // if (!fs.existsSync(embeddingsPath)) {
+    //   console.warn(`⚠️ Warning: Embeddings file not found at ${embeddingsPath}`);
+    //   console.warn('⚠️ You will need to provide the correct embeddings file later');
+    // } else {
+    //   console.log(`📍 Using embeddings file: ${embeddingsPath}`);
+    // }
 
-# Agent Server Configuration
-AGENT_HOST=localhost
-AGENT_HTTP_PORT=5678
-AGENT_STREAM_PORT=5679
-AGENT_ENABLE_STREAMING=true
-`;
-      fs.writeFileSync(agentEnvPath, agentEnvContent);
-      console.log(`✅ Sample .agent.env file created at: ${agentEnvPath}`);
-    }
+    // ---- REMOVED brain.md GENERATION ----
+    
+    // ---- REMOVED mcp_config.json GENERATION ----
+
+    // ---- REMOVED preproc-mcp.json GENERATION ----
+
+    // ---- REMOVED .agent.env GENERATION ----
+    
+    console.log('✅ Configuration generation script finished (no files generated).');
     
   } catch (error) {
-    console.error('❌ Error generating configuration:', error.message);
-    process.exit(1);
+    console.error('❌ Error during configuration script execution:', error.message);
+    // Decide if this should still exit the process
+    // process.exit(1); 
   }
 }
 
