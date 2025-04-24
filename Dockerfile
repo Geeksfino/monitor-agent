@@ -37,6 +37,9 @@ RUN bun install --frozen-lockfile
 # Generate Prisma Client
 RUN bunx prisma generate
 
+# Apply migrations (production-safe, versioned)
+RUN bunx prisma migrate deploy
+
 # Copy the rest of the application code
 COPY . .
 
