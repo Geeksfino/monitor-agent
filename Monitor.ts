@@ -19,7 +19,8 @@ async function loadStrategy(pluginName: string) {
 class Monitor {
   private natsConnection: NATS.NatsConnection | null = null;
   private natsSubscription: NATS.Subscription | null = null;
-  private config: any;
+  private config: any; // NATS config
+  private monitorConfig: any; // Monitor logic config (from monitor.yml)
   private agentUrl: string;
   private agentSessionId: string | null = null; // Single session ID for communicating with the agent
   private db: PrismaClient;
@@ -30,10 +31,11 @@ class Monitor {
    * @param agentUrl Base URL of the agent API endpoint (e.g., http://localhost:6678)
    * @param configPath Path to the NATS configuration file
    */
-  constructor(agentUrl: string, strategy: any, configPath?: string, streamUrl?: string) {
+  constructor(agentUrl: string, strategy: any, monitorConfig: any = {}, configPath?: string, streamUrl?: string) {
     this.agentUrl = agentUrl;
     this.db = new PrismaClient();
     this.strategy = strategy;
+    this.monitorConfig = monitorConfig;
     if (streamUrl) {
       (this as any).streamUrl = streamUrl; // Optionally store for future use
       console.log(`Using stream URL: ${streamUrl}`);
@@ -151,16 +153,15 @@ class Monitor {
 
     // Format selectedMessages as dialog and send to monitor agent
     const dialog = selectedMessages.map((msg: any) => {
-      const role = msg.sender === 'user' ? 'User' : 'Assistant';
+      const role = msg.sender === 'user' ? 'monitored_user' : 'monitored_agent';
       return `${role}: ${msg.content}`;
     }).join('\n\n');
-    const prompt = `Please analyze and evaluate the following conversation:\n\n${dialog}`;
-    await this.sendToAgent({
-      sessionId,
-      agentId,
-      messages: selectedMessages,
-      prompt
-    });
+    // Delimit the dialog clearly
+    const delimitedDialog = `---BEGIN DIALOG---\n${dialog}\n---END DIALOG---`;
+    // Use promptTemplate from monitorConfig if present, otherwise default
+    let promptTemplate = this.monitorConfig?.promptTemplate || "Please analyze and evaluate the following conversation between a monitored user and a monitored agent. Do NOT continue the conversation. Only provide your analysis.\n\n{{dialog}}";
+    const prompt = promptTemplate.replace(/\{\{dialog\}\}/g, delimitedDialog);
+    await this.sendToAgent({ prompt });
 
     // Mark as sent: for all/delta/window, mark all segments as sent if any message was sent
     await this.db.segment.updateMany({
@@ -172,31 +173,10 @@ class Monitor {
   /**
    * Send message to agent
    */
-  private async sendToAgent(segment: any): Promise<string> {
+  private async sendToAgent({ prompt }: { prompt: string }): Promise<string> {
     try {
-      // Format the complete conversation dialog
-      interface Message {
-        sender: string;
-        content: string;
-      }
-
-      let messageContent = '';
-      if (segment.messages && Array.isArray(segment.messages)) {
-        // Build a conversation transcript
-        messageContent = segment.messages.map((msg: Message) => {
-          const role = msg.sender === 'user' ? 'User' : 'Assistant';
-          return `${role}: ${msg.content}`;
-        }).join('\n\n');
-      } else {
-        messageContent = segment.content || segment.message || JSON.stringify(segment);
-      }
-
-      // Create the natural language prompt for LLM
-      const prompt = `Please analyze and evaluate the following conversation:\n\n${messageContent}`;
-      
       let endpoint = '/createSession';
       let requestPayload;
-      
       // If we have an existing agent session, use /chat
       if (this.agentSessionId) {
         endpoint = '/chat';
@@ -318,7 +298,7 @@ if (require.main === module) {
     if (typeof strategy.configure === 'function') {
       strategy.configure(monitorConf);
     }
-    const monitor = new Monitor(apiBaseUrl, strategy);
+    const monitor = new Monitor(apiBaseUrl, strategy, monitorConf, undefined, streamUrl);
     // Optionally, you can store streamUrl for future use, e.g., this.streamUrl = streamUrl;
     try {
       await monitor.connect();
