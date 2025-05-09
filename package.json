@@ -1,6 +1,6 @@
 {
   "name": "monitor-agent",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A dedicated monitoring agent for finclip-agent conversations",
   "type": "module",
   "scripts": {
@@ -25,7 +25,7 @@
     "serve:python": "bash embedding-demo/python-cors-server.sh"
   },
   "dependencies": {
-    "@finogeek/cxagent": "1.2.6",
+    "@finogeek/cxagent": "1.2.8",
     "@prisma/client": "^6.6.0",
     "js-yaml": "^4.1.0",
     "nats": "^2.29.3",
